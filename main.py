@@ -1,16 +1,19 @@
-import os
-from tkinter import Tk, Label, Entry, Button
+from tkinter import Tk, Label, Entry, Button, StringVar
 from tkinter.filedialog  import askdirectory 
 from tkinter.ttk import Combobox
+import download
+import text
 
 def method():
     print('Welcome to FPR\n')
     input('Press Enter to continue...')
     gui()
     if data['method'] == 'Download pictures':
-        import download
-    elif data['method'] == '2':
-        import text
+        download.search(data)
+        again()
+    elif data['method'] == 'Store links in a .txt file':
+        text.search(data)
+        again()
 
 def exit_func():
     print('Exiting program...')
@@ -89,20 +92,25 @@ def gui():
 
         Label(window, text='Height:', font=('tahoma', 15)).place(relx=0.05, rely=0.75)
         Label(window, text='Width:', font=('tahoma', 15)).place(relx=0.05, rely=0.85)
-        height = Entry(window, validate="key", validatecommand=(validate, "%P"))
-        width = Entry(window, validate="key", validatecommand=(validate, "%P"))
-        height.place(relx= 0.2, rely=0.77)
-        width.place(relx=0.2, rely=0.87)
+        height = StringVar()
+        width = StringVar()
+        Entry(window, textvariable=height, validate="key", validatecommand=(validate, "%P")).place(relx=0.2, rely=0.77)
+        Entry(window, textvariable=width, validate="key", validatecommand=(validate, "%P")).place(relx=0.2, rely=0.87)
         
     def check():
-        if search_entry.get() and save_path.get() != '':
+        if search_entry.get() != '' and save_path.get() != '' and (height.get() != '' or width.get() != ''):
             return_data()
-        if search_entry.get() == '':
-            Label(window, text='This field cannot be empty', font=('tahoma', 10), fg='red').place(relx=0.7, rely=0.16)
-            Search()
-        if save_path.get() == '':
-            Label(window, text='This field cannot be empty', font=('tahoma', 10), fg='red').place(relx=0.478, rely=0.33)
-            path()
+        elif search_entry.get() == '' or save_path.get() == '':
+            if search_entry.get() == '':
+                Label(window, text='This field cannot be empty', font=('tahoma', 10), fg='red').place(relx=0.7, rely=0.16)
+                Search()
+            if save_path.get() == '':
+                Label(window, text='This field cannot be empty', font=('tahoma', 10), fg='red').place(relx=0.478, rely=0.33)
+                path()
+
+        if height.get() == '' and width.get() == '':
+            Label(window, text='At least fill in one of these fields', font=('tahoma', 10), fg='red').place(relx=0.05, rely=0.7)
+            resolution()
         
     def return_data():
         global data
@@ -118,7 +126,7 @@ def gui():
         data['height'] = height.get()
         data['width'] = width.get()
 
-        window.quit()
+        window.destroy()
     
     Search()
     path()
@@ -128,6 +136,7 @@ def gui():
     Button(window, text='Search', bd=1, font=('tahoma', 20), command=check).place(relx=0.8, rely=0.85, anchor='center')
 
     window.mainloop()
+    
     make_link(data)
 
 def make_link(data):
@@ -218,5 +227,27 @@ def make_link(data):
 
     data['url'] = url
     return data
+
+def again():
+    print('Do you want search again?')
+    print('1 - Search')
+    print('2 - search for current searched title')
+    print('0 - Exit')
+    act = input('--> ')
+    if data['method'] == 'Download pictures':
+        if act.lower() in ['1', 'search']:
+            download.search(data)
+        elif act == '2':
+            download.check_to_download(data)
+    elif data['method'] == 'Store links in a .txt file':
+        if act.lower() in ['1', 'search']:
+            text.search()
+        elif act == '2':
+            text.check_to_download()
+    elif act.lower() in ['0', 'exit']:
+        exit_func()    
+    else:
+        print('Input is incorrect. Try again. ')
+        again()
 
 method()
