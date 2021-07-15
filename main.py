@@ -3,16 +3,6 @@ from tkinter import Tk, Label, Entry, Button
 from tkinter.filedialog  import askdirectory 
 from tkinter.ttk import Combobox
 
-def make_folders():
-    folder_1 = ('\\downloads')
-    folder_2 = ('\\text files')
-    folder_path1 = str(os.path.dirname(os.path.realpath(__file__))) + folder_1
-    folder_path2 = str(os.path.dirname(os.path.realpath(__file__))) + folder_2
-    if not os.path.exists(folder_path1):
-        os.makedirs(folder_path1)
-    if not os.path.exists(folder_path2):
-        os.makedirs(folder_path2)
-
 def method():
     print('Welcome to FPR\n')
     input('Press Enter to continue...')
