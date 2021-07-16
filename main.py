@@ -4,9 +4,10 @@ from tkinter.ttk import Combobox
 import download
 import text
 
+print('Welcome to Pic finder\n')
+input('Press Enter to continue...')
+
 def method():
-    print('Welcome to FPR\n')
-    input('Press Enter to continue...')
     gui()
     if data['method'] == 'Download pictures':
         download.search(data)
@@ -144,7 +145,6 @@ def make_link(data):
         exit_func()
 
     url = 'https://duckduckgo.com/?q={}&iax=images&ia=images'.format(data['search word'].replace(' ', '+'))
-    print(url)
 
     # time
     if data['time'] != 'Any time':
@@ -236,6 +236,7 @@ def again():
     act = input('--> ')
     if data['method'] == 'Download pictures':
         if act.lower() in ['1', 'search']:
+            gui()
             download.search(data)
         elif act == '2':
             download.check_to_download(data)
@@ -249,5 +250,6 @@ def again():
     else:
         print('Input is incorrect. Try again. ')
         again()
+    again()
 
 method()
