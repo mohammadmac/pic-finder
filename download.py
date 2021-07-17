@@ -2,7 +2,6 @@ from time import sleep
 from requests import get
 from selenium import webdriver
 from re import findall
-from progress.bar import IncrementalBar
 
 def browser():
     global driver, find
@@ -125,10 +124,20 @@ def download(pic_url, save_path):
 
         if r.status_code == 200:
             total_size = int(r.headers.get('content-length', 0))
-            with open(save_path, 'wb') as file, IncrementalBar('Downloading {}'.format(file_name), max=100, suffix = '%(percent).1f%% - {}MB'.format(format(total_size/1048576, '.1f'))) as bar:
+            stored = 0
+            remaining_mark = 50 * '⡀'
+            received_mark = '█'
+
+            with open(save_path, 'wb') as file:
                 for data in r.iter_content(chunk_size=1024):
                     outputfile = file.write(data)
-                    bar.next((int(outputfile) / total_size) * 100)
+                    
+                    stored += outputfile
+                    bar_amount = str((int(stored)/total_size) * 50)
+                    bar_amount = (int(bar_amount.split('.')[0]) * received_mark) + remaining_mark[int(bar_amount.split('.')[0]):]
+                    received = format((int(stored) / total_size) * 100, '.1f') +'%'
+                    total_size_mb = format(total_size/1048576, '.1f') + 'MB'
+                    bar_func(file_name, received, bar_amount, total_size_mb)
         else:
             print('Cannot download %s!' % (file_name))
             print('So it will open in another tab to download that yourself')
@@ -142,6 +151,11 @@ def download(pic_url, save_path):
         print('So it will open in another tab to download that yourself')
         sleep(2)
         driver.switch_to_window(driver.window_handles[0])
+
+def bar_func(file_name, received, bar_amount, total_size):
+    print('downloading %s |%s| %s %s' % (file_name, bar_amount, received, total_size), end='\r')
+    if bar_amount == '██████████████████████████████████████████████████':
+        print('Downloading %s |%s | %s - %s Done!' % (file_name, bar_amount, received, total_size))
 
 def exit_func():
     print('exiting program...')
