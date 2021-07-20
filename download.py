@@ -51,7 +51,6 @@ def both(data):
             if pictre_width >= int(data['width']) or pictre_height >= int(data['height']):
                 print('\n%s- %s' % (found, resolution))
                 pic_xpath = '//*[@id="zci-images"]/div[1]/div[2]/div/div[%s]/div[1]' % (count - 1)
-                #driver.execute_script("arguments[0].scrollIntoView();", find(pic_xpath))
                 find(pic_xpath).click()
                 
                 sleep(2)
@@ -59,6 +58,7 @@ def both(data):
                 download(pic_url, data['save path'])
                 
                 found += 1
+                
     except:
         print('\nDone! \n')
 
