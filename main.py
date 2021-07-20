@@ -234,17 +234,17 @@ def again():
     print('2 - search for current searched title')
     print('0 - Exit')
     act = input('--> ')
-    if data['method'] == 'Download pictures':
-        if act.lower() in ['1', 'search']:
-            gui()
+    if act.lower() in ['1', 'search']:
+        gui()
+        if data['method'] == 'Download pictures':
             download.search(data)
-        elif act == '2':
+        elif data['method'] == 'Store links in a .txt file':
+            text.search(data)
+    elif act == '2':
+        if data['method'] == 'Download pictures':
             download.check_to_download(data)
-    elif data['method'] == 'Store links in a .txt file':
-        if act.lower() in ['1', 'search']:
-            text.search()
-        elif act == '2':
-            text.check_to_download()
+        elif data['method'] == 'Store links in a .txt file':
+            text.check_to_store(data)
     elif act.lower() in ['0', 'exit']:
         exit_func()    
     else:
