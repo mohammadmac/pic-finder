@@ -1,7 +1,8 @@
-from time import sleep
+from time import sleep, asctime
 from requests import get
 from selenium import webdriver
 from re import findall
+from datetime import datetime
 
 def browser():
     global driver, find
@@ -116,28 +117,28 @@ def download(pic_url, save_path):
         r = get(pic_url, stream=True)
 
         if "Content-Disposition" in r.headers.keys():
+            try:
                 file_name = findall("filename=(.+)", r.headers["Content-Disposition"])[0]
+            except:
+                file_name = pic_url.split("/")[-1]
         else:
             file_name = pic_url.split("/")[-1]
+            
             
         save_path = save_path + '/' + file_name
 
         if r.status_code == 200:
+            start_download = asctime().split(' ')[3]
+
             total_size = int(r.headers.get('content-length', 0))
             stored = 0
-            remaining_mark = 50 * '⡀'
-            received_mark = '█'
 
             with open(save_path, 'wb') as file:
                 for data in r.iter_content(chunk_size=1024):
                     outputfile = file.write(data)
                     
                     stored += outputfile
-                    bar_amount = str((int(stored)/total_size) * 50)
-                    bar_amount = (int(bar_amount.split('.')[0]) * received_mark) + remaining_mark[int(bar_amount.split('.')[0]):]
-                    received = format((int(stored) / total_size) * 100, '.1f') +'%'
-                    total_size_mb = format(total_size/1048576, '.1f') + 'MB'
-                    bar_func(file_name, received, bar_amount, total_size_mb)
+                    bar_func(file_name, total_size, stored, start_download)
         else:
             print('Cannot download %s!' % (file_name))
             print('So it will open in another tab to download that yourself')
@@ -152,10 +153,21 @@ def download(pic_url, save_path):
         sleep(2)
         driver.switch_to_window(driver.window_handles[0])
 
-def bar_func(file_name, received, bar_amount, total_size):
-    print('downloading %s |%s| %s %s' % (file_name, bar_amount, received, total_size), end='\r')
+def bar_func(file_name, total_size, stored, start_download):
+    remaining_mark = 50 * '⡀'
+    received_mark = '█'
+    FMT = '%H:%M:%S'
+
+    bar_amount = str((int(stored)/total_size) * 50)
+    bar_amount = (int(bar_amount.split('.')[0]) * received_mark) + remaining_mark[int(bar_amount.split('.')[0]):]
+    now = asctime().split(' ')[3]
+    time_spent = datetime.strptime(now, FMT) - datetime.strptime(start_download, FMT)
+    received = format((int(stored) / total_size) * 100, '.1f') +'%'
+    total_size_mb = format(total_size/1048576, '.1f') + 'MB'
+
+    print('downloading %s |%s| %s %s %s' % (file_name, bar_amount, total_size_mb, received, time_spent), end='\r')
     if bar_amount == '██████████████████████████████████████████████████':
-        print('Downloading %s |%s | %s - %s Done!' % (file_name, bar_amount, received, total_size))
+        print('Downloading %s |%s | %s %s - %s Done!' % (file_name, bar_amount, total_size_mb, received, time_spent))
 
 def exit_func():
     print('exiting program...')
