@@ -1,6 +1,4 @@
-import os
 from time import sleep
-
 from selenium import webdriver
 
 def browser():
