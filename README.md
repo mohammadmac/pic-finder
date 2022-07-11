@@ -1,6 +1,8 @@
-A python script, which uses duckduckgo search engine to find high resolution pictures.
+# pic-finder 
+Scrap duckduckgo images
 
-This program works with the Selenium Library. Please download the driver and save it in the code path
+# requirements
+ - Selenium
+ - Tkinter
 
-download link:
-https://sites.google.com/a/chromium.org/chromedriver/downloads
+[click here](https://sites.google.com/a/chromium.org/chromedriver/downloads) to download selenium driver. 
