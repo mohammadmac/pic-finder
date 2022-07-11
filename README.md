@@ -1,5 +1,5 @@
 # pic-finder 
-Scrap duckduckgo images
+Scrape duckduckgo images
 
 # requirements
  - Selenium
